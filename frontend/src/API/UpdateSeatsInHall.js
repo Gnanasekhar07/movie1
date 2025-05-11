@@ -1,5 +1,5 @@
 async function updateOccupiedSeatsInHall(BASE_URL, hallUpdate) {
-  const url = `${BASE_URL}/movie/${hallUpdate.movieId}/${hallUpdate.movieSession}`;
+  const url = `${BASE_URL}/movie/${encodeURIComponent(hallUpdate.movieId)}/${encodeURIComponent(hallUpdate.movieSession)}`;
   try {
     const response = await fetch(url, {
       method: 'PUT',

@@ -13,7 +13,7 @@ public class CinemaHall {
     @Column
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
-    private Long movieId;
+    private String movieId;
 
     private String movieSession;
     private String orderTime;
@@ -23,7 +23,7 @@ public class CinemaHall {
     public CinemaHall() {
     }
 
-    public CinemaHall(Long id, Long movieId, String movieSession, String orderTime, List<Integer> updatedSeats) {
+    public CinemaHall(Long id, String movieId, String movieSession, String orderTime, List<Integer> updatedSeats) {
         this.id = id;
         this.movieId = movieId;
         this.movieSession = movieSession;
@@ -39,11 +39,11 @@ public class CinemaHall {
         this.id = id;
     }
 
-    public Long getMovieId() {
+    public String getMovieId() {
         return movieId;
     }
 
-    public void setMovieId(Long movieId) {
+    public void setMovieId(String movieId) {
         this.movieId = movieId;
     }
 

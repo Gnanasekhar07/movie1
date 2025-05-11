@@ -6,6 +6,7 @@ import updateSeatsInHall from '../API/UpdateSeatsInHall';
 import generateRandomOccupiedSeats from '../utils/GenerateRandomOccupiedSeats';
 import SeatSelector from './SeatSelector';
 import SeatShowcase from './SeatShowcase';
+import { send } from '@emailjs/browser';
 
 const movies = [
   {
@@ -24,6 +25,7 @@ function SeatPlan({ movie }) {
   const [movieSession, setMovieSession] = useState(null);
   const [userName, setUserName] = useState('');
   const [userId, setUserId] = useState('');
+  const [userEmail, setUserEmail] = useState('');
 
   const [seatPlan, setSeatPlan] = useState(null);
 
@@ -37,7 +39,7 @@ function SeatPlan({ movie }) {
   useEffect(() => {
     const fetchSeatPlan = async () => {
       try {
-        if (movieSession && movieSession.time) {
+        if (movieSession && movieSession.time && movie && movie.id) {
           const data = await getSeatPlan(movie.id, movieSession);
           setSeatPlan(data);
         }
@@ -46,21 +48,26 @@ function SeatPlan({ movie }) {
       }
     };
 
-    if (movieSession) {
+    if (movieSession && movie && movie.id) {
       fetchSeatPlan();
     }
-  }, [movie.id, movieSession]);
+  }, [movie, movieSession]);
 
   useEffect(() => {
     const storedUser = JSON.parse(localStorage.getItem('user'));
     if (storedUser) {
       setUserName(storedUser.userName);
       setUserId(storedUser.userId);
+      // Use the registered email address directly from storedUser.email without fallback
+      setUserEmail(storedUser.email);
     }
   }, []);
 
-  const occupiedSeats =
-    seatPlan && seatPlan.length > 0 ? seatPlan : movies[0].occupied;
+  const occupiedSeats = Array.isArray(seatPlan) && seatPlan.length > 0
+    ? seatPlan
+    : Array.isArray(movie?.occupied)
+      ? movie.occupied
+      : movies[0].occupied || [];
 
   const availableSeats = [27, 28, 29, 30, 35, 36, 37, 38, 43, 44, 45, 46];
 
@@ -80,22 +87,41 @@ function SeatPlan({ movie }) {
     setRecommendedSeat(recommended);
   }, [filteredAvailableSeats, occupiedSeats]);
 
+  if (!movie || !movie.id) {
+    return (
+      <div className="flex flex-col items-center p-4">
+        <h2 className="text-xl font-semibold text-center text-red-600">
+          Movie data is missing or incomplete. Cannot display seat plan.
+        </h2>
+      </div>
+    );
+  }
+
   let selectedSeatText = '';
   if (selectedSeats.length > 0) {
     selectedSeatText = selectedSeats.map((seat) => seat + 1).join(', ');
   }
 
-  let totalPrice = selectedSeats.length * movies[0].price;
+  let totalPrice = selectedSeats.length * ((movie && movie.price) || movies[0].price);
 
   const isAnySeatSelected = selectedSeats.length > 0;
 
+  // Function to generate a unique ticket number
+  const generateTicketNumber = () => {
+    return 'TICKET-' + Math.random().toString(36).substr(2, 9).toUpperCase();
+  };
+
   const handleButtonClick = async (e) => {
     e.preventDefault();
-    const isAnySeatSelected = selectedSeats.length > 0;
-
+    if (!movie || !movie.id) {
+      console.error('Movie or movie.id is undefined. Cannot proceed with order.');
+      return;
+    }
     if (isAnySeatSelected) {
       const orderSeats = selectedSeats;
       const updatedOccupiedSeats = [...orderSeats, ...occupiedSeats];
+
+      const ticketNumber = generateTicketNumber();
 
       const order = {
         customerId: userId || Math.floor(Math.random() * 1000000),
@@ -106,11 +132,12 @@ function SeatPlan({ movie }) {
         movie: {
           id: movie.id,
           title: movie.title,
-          genres: movie.genres.map((genre) => genre.name).join(', '),
+          genres: (movie.genres && Array.isArray(movie.genres)) ? movie.genres.map((genre) => genre.name).join(', ') : '',
           runtime: movie.runtime,
           language: movie.original_language,
-          price: movies[0].price,
+          price: (movie && movie.price) || movies[0].price,
         },
+        ticketNumber: ticketNumber,
       };
 
       const myOrder = {
@@ -124,6 +151,7 @@ function SeatPlan({ movie }) {
         moviePrice: order.movie.price,
         seat: order.seat,
         userName: order.userName,
+        ticketNumber: ticketNumber,
       };
 
       const hallUpdate = {
@@ -133,20 +161,46 @@ function SeatPlan({ movie }) {
         updatedSeats: updatedOccupiedSeats,
       };
 
-      const updateSuccess = await updateSeatsInHall(BASE_URL, hallUpdate);
+      // Navigate to ticket display page immediately without waiting for database update
+      navigate('/ticket-display', { state: myOrder });
 
-      if (updateSuccess) {
-        const buyTickets = await BuyTickets(BASE_URL, myOrder);
-        if (buyTickets) {
-          setSuccessPopupVisible(true);
-          setTimeout(() => {
-            setSuccessPopupVisible(false);
-            navigate('/');
-          }, 2000);
+      // Proceed to update seats in the database asynchronously
+      updateSeatsInHall(BASE_URL, hallUpdate).then((updateSuccess) => {
+        if (updateSuccess) {
+          // Validate userEmail before sending email
+          if (!userEmail || userEmail.trim() === '') {
+            console.error('User email is empty. Cannot send email.');
+            return;
+          }
+
+          const templateParams = {
+            to_name: userName,
+            to_email: userEmail,
+            movie_title: order.movie.title,
+            seats: selectedSeatText,
+            total_price: totalPrice.toFixed(2),
+            order_date: new Date(order.orderDate).toLocaleString(),
+            ticket_number: ticketNumber,
+          };
+
+          console.log('Sending email with templateParams:', templateParams);
+
+          send(
+            'service_2lvc33q',
+            'template_yy3wlhn',
+            templateParams,
+            'obWVmezkWTPwpxhF7'
+          ).then((response) => {
+            console.log('Email sent successfully!', response.status, response.text);
+          }, (err) => {
+            console.error('Failed to send email:', err);
+          });
+        } else {
+          console.error('Failed to update occupied seats in the database');
         }
-      } else {
-        console.error('Failed to update occupied seats in the database');
-      }
+      }).catch((error) => {
+        console.error('Error updating occupied seats:', error);
+      });
     }
   };
 
@@ -160,7 +214,7 @@ function SeatPlan({ movie }) {
 
       <div className='CinemaPlan'>
         <SeatSelector
-          movie={{ ...movies[0], occupied: occupiedSeats }}
+          movie={movie}
           selectedSeats={selectedSeats}
           recommendedSeat={recommendedSeat}
           onSelectedSeatsChange={(selectedSeats) =>

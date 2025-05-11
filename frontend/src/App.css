@@ -14,25 +14,64 @@
 }
 
 .App-header {
-  background-color: #282c34;
+  background-color: #333333; /* changed from #282c34 to dark gray */
   min-height: 100vh;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
   font-size: calc(10px + 2vmin);
-  color: white;
+  color: white; /* keep text readable */
 }
 
 .App-link {
   color: #61dafb;
 }
 
-@keyframes App-logo-spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
+/* New styles for ticket display and booking confirmation */
+
+.TicketDisplay {
+  max-width: 600px;
+  margin: 2rem auto;
+  padding: 1.5rem;
+  background-color: #f9f9f9;
+  border-radius: 8px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  color: #222;
+}
+
+.TicketDisplay h1 {
+  font-size: 2rem;
+  margin-bottom: 1rem;
+  color: #222;
+}
+
+.TicketDisplay p {
+  font-size: 1.1rem;
+  margin: 0.5rem 0;
+}
+
+.TicketDisplay strong {
+  color: #444;
+}
+
+button {
+  background-color: #007bff;
+  border: none;
+  color: white;
+  padding: 0.6rem 1.2rem;
+  font-size: 1rem;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+button:hover {
+  background-color: #0056b3;
+}
+
+button:disabled,
+button[disabled] {
+  background-color: #cccccc;
+  cursor: not-allowed;
 }

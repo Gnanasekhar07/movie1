@@ -1,4 +1,4 @@
-const RemoveUnwantedGenres = (genres) => {
+const RemoveUnwantedGenres = (genres = []) => {
   return genres.filter(
     (genre) =>
       genre.name !== 'Documentary' &&

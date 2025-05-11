@@ -7,5 +7,5 @@ import java.util.Optional;
 
 public interface CinemaHallRepository extends JpaRepository<CinemaHall, Long> {
 
-    Optional<CinemaHall> findByMovieIdAndMovieSession(Long movieId, String movieSession);
+    Optional<CinemaHall> findByMovieIdAndMovieSession(String movieId, String movieSession);
 }

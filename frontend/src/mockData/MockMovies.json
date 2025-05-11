@@ -1,0 +1,21 @@
+{
+  "results": [
+    {
+      "id": "1",
+      "title": "Sample Movie 1",
+      "genre_ids": [28, 12],
+      "backdrop_path": "/sample1.jpg",
+      "overview": "This is a sample movie 1 description.",
+      "release_date": "2023-01-01"
+    },
+    {
+      "id": "2",
+      "title": "Sample Movie 2",
+      "genre_ids": [16, 35],
+      "backdrop_path": "/sample2.jpg",
+      "overview": "This is a sample movie 2 description.",
+      "release_date": "2023-02-01"
+    }
+  ],
+  "total_pages": 1
+}

@@ -1,13 +1,13 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 
-const SessionInfo = ({ movieSessions, movieId }) => {
+const SessionInfo = ({ movieSessions, movieId, imdbID }) => {
   const handleSessionSelect = (session) => {
     localStorage.setItem('movieSession', JSON.stringify(session));
   };
 
   return (
-    <Link to={`/movie/${movieId}`} className='container'>
+    <Link to={`/movie/${movieId}/${imdbID}`} className='container'>
       <ul>
         {movieSessions.map((session, index) => (
           <li key={index}>

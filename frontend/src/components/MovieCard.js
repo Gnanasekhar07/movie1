@@ -9,8 +9,8 @@ const MovieCard = ({ movie, hallNumber }) => {
     <div className='bg-white shadow-md rounded-lg overflow-hidden flex h-96'>
       <div className='relative w-1/2'>
         <img
-          src={`https://image.tmdb.org/t/p/w500${movie.poster_path}`}
-          alt={movie.title}
+          src={movie.Poster}
+          alt={movie.Title || movie.title}
           className='w-full h-full object-cover'
         />
       </div>
@@ -21,7 +21,7 @@ const MovieCard = ({ movie, hallNumber }) => {
         <div className='text-left text-sm'>
           <div>
             <div>
-              <SessionInfo movieSessions={movieSessions} movieId={movie.id} />
+              <SessionInfo movieSessions={movieSessions} movieId={movie.imdbID} imdbID={movie.imdbID} />
             </div>
           </div>
           <div>
@@ -30,8 +30,8 @@ const MovieCard = ({ movie, hallNumber }) => {
             </span>
           </div>
           <div>
-            <span className='text-gray-500'>
-              Rating: {movie.vote_average.toFixed(1)}
+          <span className='text-gray-500'>
+              Rating: {movie.vote_average !== undefined ? movie.vote_average.toFixed(1) : 'N/A'}
             </span>
           </div>
         </div>

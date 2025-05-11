@@ -40,7 +40,7 @@ function SeatSelector({
       <div className='seats'>
         {seats.map((seat) => {
           const isSelected = selectedSeats.includes(seat);
-          const isOccupied = movie.occupied.includes(seat);
+          const isOccupied = Array.isArray(movie.occupied) && movie.occupied.includes(seat);
           const showRecommended =
             selectedSeats.length === 0 && recommendedSeat === seat;
 

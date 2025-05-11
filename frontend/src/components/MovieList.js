@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from 'react';
-import FetchMoviesByGenre from '../API/FetchMoviesByGenre';
 import FetchMoviesBySearch from '../API/FetchMoviesBySearch';
 import { isLoggedIn } from '../utils/Auth';
 import Genres from './Genre';
@@ -10,41 +9,23 @@ const MovieList = ({ searchText }) => {
   const [movies, setMovies] = useState([]);
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
-  const [genreIds, setGenreIds] = useState([]);
+  const [genreIds, setGenreIds] = useState([]); // Added state for genreIds
   const userLoggedIn = isLoggedIn();
 
-  const ACCESS_TOKEN = process.env.REACT_APP_ACCESS_TOKEN || '';
 
   useEffect(() => {
     const fetchMoviesBySearch = async () => {
-      if (searchText) {
-        const response = await FetchMoviesBySearch(
-          ACCESS_TOKEN,
-          page,
-          searchText,
-        );
-        if (response) {
-          const { filteredMovies, totalPages } = response;
-          setMovies(filteredMovies);
-          setTotalPages(totalPages);
-        }
-      }
-    };
-
-    const fetchMoviesByGenre = async () => {
-      if (!searchText) {
-        const response = await FetchMoviesByGenre(ACCESS_TOKEN, page, genreIds);
-        if (response) {
-          const { filteredMovies, totalPages } = response;
-          setMovies(filteredMovies);
-          setTotalPages(totalPages);
-        }
+      const response = await FetchMoviesBySearch(page, searchText || 'movie');
+      console.log('FetchMoviesBySearch response:', response);
+      if (response) {
+        const { filteredMovies, totalPages } = response;
+        setMovies(filteredMovies);
+        setTotalPages(totalPages);
       }
     };
 
     fetchMoviesBySearch();
-    fetchMoviesByGenre();
-  }, [page, genreIds, searchText, ACCESS_TOKEN]);
+  }, [page, searchText]);
 
   const handleNextPage = () => {
     if (page < totalPages) {
@@ -60,7 +41,7 @@ const MovieList = ({ searchText }) => {
 
   return (
     <div className='container mx-auto px-4 py-4'>
-      <Genres setGenreIds={setGenreIds} />
+      <Genres setGenreIds={setGenreIds} /> {/* Passed setGenreIds as prop */}
       {userLoggedIn && (
         <div>
           <RecommendedMovies />
@@ -70,7 +51,7 @@ const MovieList = ({ searchText }) => {
       <h1 className='text-left font-bold mb-4'>All Movies</h1>
       <div className='grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4'>
         {movies.map((movie, index) => (
-          <MovieCard key={movie.id} movie={movie} hallNumber={index} />
+          <MovieCard key={movie.imdbID || movie.id} movie={movie} hallNumber={index} />
         ))}
       </div>
       <div className='flex justify-center mt-4'>

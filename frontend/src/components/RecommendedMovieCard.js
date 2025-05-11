@@ -9,8 +9,8 @@ const RecommendedMovieCard = ({ movie, hallNumber }) => {
     <div className='bg-white shadow-md rounded-lg overflow-hidden flex'>
       <div className='relative w-1/2 h-72'>
         <img
-          src={`https://image.tmdb.org/t/p/w500${movie.poster_path}`}
-          alt={movie.title}
+          src={movie.Poster}
+          alt={movie.Title || movie.title}
           className='w-full h-full object-cover' 
         />
       </div>

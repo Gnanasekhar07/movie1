@@ -22,7 +22,7 @@ function getRandomOffset(hallNumber, seed) {
 }
 
 function MovieSessions(movie, hallNumber) {
-  const language = '🔊 ' + movie.original_language.toUpperCase();
+  const language = '🔊 ' + (movie.original_language ? movie.original_language.toUpperCase() : 'N/A');
   const currentTime = new Date(); 
   const sessionStartTime = new Date(currentTime.getFullYear(), currentTime.getMonth(), currentTime.getDate(), 9, 0, 0); 
   const sessionEndTime = new Date(currentTime.getFullYear(), currentTime.getMonth(), currentTime.getDate() + 1, 0, 0, 0); 

@@ -5,6 +5,7 @@ import Footer from './layout/Footer';
 import NavBar from './layout/NavBar';
 import Home from './pages/Home';
 import MovieDetails from './pages/MovieDetails';
+import TicketDisplay from './pages/TicketDisplay';
 import { isLoggedIn, login, logout } from './utils/Auth';
 
 function App() {
@@ -46,7 +47,8 @@ function App() {
             path='/'
             element={<Home searchText={searchText} user={user} />}
           />
-          <Route path='/movie/:id' element={<MovieDetails />} />
+          <Route path='/movie/:movieId/:imdbID' element={<MovieDetails />} />
+          <Route path='/ticket-display' element={<TicketDisplay />} />
         </Routes>
         <Footer />
       </BrowserRouter>

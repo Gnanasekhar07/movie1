@@ -22,7 +22,7 @@ public class Order {
 
     private String userName;
     private String orderDate;
-    private Long movieId;
+    private String movieId;
     private String movieTitle;
     private String movieGenres;
     private String movieLanguage;
@@ -80,11 +80,11 @@ public class Order {
         this.orderDate = orderDate;
     }
 
-    public Long getMovieId() {
+    public String getMovieId() {
         return movieId;
     }
 
-    public void setMovieId(Long movieId) {
+    public void setMovieId(String movieId) {
         this.movieId = movieId;
     }
 
